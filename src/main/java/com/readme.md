@@ -1,24 +1,37 @@
-# API de Gestión de Polizas
-## Arquitectura y Desiciones de Diseño
-- **Rich Domain Model:
-- ** Las reglas de negocio (renovación, restricciones de riesgos, cancelación en cascada) 
----  residen dentro de las entidades `Poliza` y `Riesgo`. Esto previene el anti-patrón de "Servicios Anémicos" y centraliza la lógica.
-- **gravacion de registros:
-  ** Uso de `Records` para el paso de datos.
-- **cada quien copn su cada cual:
-  ** Separación estricta de responsabilidades 
-  -- (Seguridad en Filtros, Dominio en Entidades, Orquestación en Servicios).
+# API de Gestión de Pólizas
+
+## Arquitectura y Decisiones de Diseño
+
+- **Rich Domain Model**: Las reglas de negocio (renovación, restricciones de riesgos, cancelación en cascada) residen dentro de las entidades `Poliza` y `Riesgo`.
+- **Inyección de Dependencias**: Uso de constructor injection con Lombok `@RequiredArgsConstructor`.
+- **Separación de responsabilidades**:
+  - **Filtros**: Seguridad (API Key validation)
+  - **Entidades**: Lógica de dominio
+  - **Servicios**: Orquestación y transaccionalidad
+  - **Controladores**: HTTP handling
+  - **Repositorios**: Persistencia
 
 ## Requisitos Previos
-- Java 17+
-- Maven/Gradle (dev)
+
+- Java 21+
+- Maven 3.8+
 
 ## Ejecución
-1. Levantar con `./mvnw spring-boot:run`
-2. Configurar en el cliente (Postman/cURL) el header obligatorio: `x-api-key: 1234567890`
+
+```bash
+./mvnw spring-boot:run
+```
+
+## Configuración de Seguridad
+
+Header requerido: `x-api-key: 123456`
 
 ## Endpoints Principales
+
 - `GET /polizas?tipo=INDIVIDUAL&estado=ACTIVA`
-- `POST /polizas/{id}/renovar` 
+- `GET /polizas/{id}/riesgos`
+- `POST /polizas/{id}/renovar`
 - `POST /polizas/{id}/cancelar`
-- `POST /polizas/{id}/riesgos` 
+- `POST /polizas/{id}/riesgos` (solo COLECTIVA)
+- `POST /riesgos/{id}/cancelar`
+- `POST /core-mock/evento` (mock externo)
